@@ -1,36 +1,21 @@
-SYSTEMC_HOME    = ### input SystemC install path ###
-TARGET_ARCH     = linux
+CC = g++
+SYSTEMC = /usr/local/systemc-2.1
+INCDIR = -I. -I$(SYSTEMC)/include
+LIBDIR = -L. -L$(SYSTEMC)/lib-linux
+LIBS   = -lsystemc -lm 
+CFLAGS = -O2 -Wall
 
-SYSTEMC_INC_DIR = $(SYSTEMC_HOME)/include
-SYSTEMC_LIB_DIR = $(SYSTEMC_HOME)/lib-$(TARGET_ARCH)
+TARGET = run.x
+SRCS   = adder.cpp tb.cpp main.cpp
+OBJS   = $(SRCS:.cpp=.o)
 
-# LIBTOOL Setting
-SHELL           = /bin/bash
-LIBTOOL_DIR     = #### input libtool install path ###
-LIBTOOL         = $(SHELL) $(LIBTOOL_DIR)/libtool
+all: $(TARGET)
 
-GXX             = g++
-GCC             = gcc
-LD              = g++
-
-FLAGS           = -g -Wall -pedantic -Wno-long-long \
-                 -DSC_INCLUDE_DYNAMIC_PROCESSES -fpermissive \
-                 -I$(SYSTEMC_INC_DIR) 
-LDFLAGS         = -L$(SYSTEMC_LIB_DIR) -lsystemc -lm
-
-SRCS = sc_main.cpp
-OBJS=$(SRCS:.cpp=.o)
-
-# main
-main: $(OBJS)
->   $(LIBTOOL) --mode=link --tag=CXX g++ -o $@ $(OBJS) $(LDFLAGS)
+$(TARGET): $(OBJS) 
+    $(CC) -o $@ $(LIBDIR) $(LIBS) $(OBJS) 
 
 .cpp.o:
->   $(LIBTOOL) --mode=compile g++ -c $(FLAGS) $<
-
-%.o: %.c
->   $(LIBTOOL) --mode=compile gcc -Wall -c $<
+    $(CC) $(CFLAGS) $(INCDIR) -c $<
 
 clean:
->   rm -f main *.o *.lo
->   rm -rf .libs
+    @rm -f *.o $(TARGET)
