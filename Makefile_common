@@ -1,0 +1,7 @@
+SYSTEMC=/usr/local/systemc
+LDFLAGS= -L$(SYSTEMC)/lib-linux -lsystemc
+CXXFLAGS=-Wno-deprecated -I$(SYSTEMC)/include -fpermissive
+ 
+all:
+ g++ $(CXXFLAGS) *.cpp $(LDFLAGS)
+ ./a.out
